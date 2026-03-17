@@ -1,10 +1,12 @@
 # Secured webshop
 
-Ce repository est utilisé dans le cadre du projet Secure Webshop pour le cours 183 - Sécurité des applications
+Ce repository est utilise dans le cadre du projet Secure Webshop pour le cours 183 - Securite des applications.
 
-## Démarrer le projet
+## Demarrer le projet
 
-Exécuter `docker-compose up`
+Executer `docker-compose up`
 
-## Page de démarrage
-http://localhost:8080/user
+## Pages disponibles
+
+- Accueil webshop: http://localhost:8080/
+- Route exercice utilisateur: http://localhost:8080/user
