@@ -1,31 +1,260 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Secure Shop - Inscription</title>
-    <link rel="stylesheet" href="/css/main.css">
-</head>
-<body>
-    <div id="topbar"></div>
+    <style>
+      :root {
+        --bg: #f4f7fb;
+        --surface: #ffffff;
+        --text: #1f2937;
+        --muted: #6b7280;
+        --primary: #2563eb;
+        --primary-hover: #1e40af;
+        --shadow: 0 10px 30px rgba(15, 23, 42, 0.1);
+        --radius: 16px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        color: var(--text);
+        background: linear-gradient(180deg, #eef3ff 0%, var(--bg) 100%);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .container {
+        width: min(1080px, 92%);
+        margin: 0 auto;
+      }
+
+      /* Topbar */
+      .topbar {
+        position: sticky;
+        top: 0;
+        backdrop-filter: blur(8px);
+        background: rgba(255, 255, 255, 0.8);
+        border-bottom: 1px solid #e5e7eb;
+        z-index: 100;
+      }
+
+      .topbar .container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 68px;
+      }
+
+      .brand {
+        font-weight: 700;
+        font-size: 1.2rem;
+        text-decoration: none;
+        color: var(--text);
+      }
+
+      .menu {
+        display: flex;
+        gap: 1.2rem;
+      }
+
+      .menu a {
+        text-decoration: none;
+        color: var(--text);
+        font-weight: 500;
+      }
+
+      /* Main Content */
+      main {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 0;
+      }
+
+      /* Card (Adaptée de login-card) */
+      .register-card {
+        background: var(--surface);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 2.5rem;
+        width: 100%;
+        max-width: 480px; /* Un peu plus large pour le confort */
+        margin: 0 auto;
+      }
+
+      .register-header {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      .eyebrow {
+        display: inline-block;
+        margin-bottom: 1rem;
+        padding: 0.35rem 0.8rem;
+        border-radius: 999px;
+        background: #dbeafe;
+        color: #1d4ed8;
+        font-size: 0.85rem;
+        font-weight: 700;
+      }
+
+      h1 {
+        margin: 0.5rem 0;
+        font-size: 1.8rem;
+      }
+
+      .form-group {
+        margin-bottom: 1.2rem;
+      }
+
+      label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.4rem;
+        font-size: 0.9rem;
+      }
+
+      input[type="text"],
+      input[type="email"],
+      input[type="password"] {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid #d1d5db;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.2s;
+      }
+
+      input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      }
+
+      .btn-submit {
+        width: 100%;
+        border: 0;
+        border-radius: 10px;
+        padding: 0.8rem;
+        background: var(--primary);
+        color: #fff;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        margin-top: 1rem;
+        transition: background 0.2s;
+      }
+
+      .btn-submit:hover {
+        background: var(--primary-hover);
+      }
+
+      .login-link {
+        margin-top: 1.5rem;
+        text-align: center;
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+
+      .login-link a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      /* Footer */
+      .footer {
+        border-top: 1px solid #e5e7eb;
+        background: #fff;
+        color: var(--muted);
+        padding: 1.5rem 0;
+        text-align: center;
+      }
+
+      @media (max-width: 500px) {
+        .register-card {
+          padding: 1.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container">
+        <a href="/" class="brand">Secure Shop</a>
+        <nav class="menu">
+          <a href="/">Accueil</a>
+          <a href="/login">Connexion</a>
+        </nav>
+      </div>
+    </header>
 
     <main>
-        <section class="hero">
-            <div class="container">
-                <h1>Inscription</h1>
+      <div class="container">
+        <div class="register-card">
+          <div class="register-header">
+            <span class="eyebrow">Nouveau Compte</span>
+            <h1>Rejoignez-nous</h1>
+          </div>
 
-                <p>Placer un formulaire d'inscription ici</p>
-
+          <form action="/api/auth/register" method="POST">
+            <div class="form-group">
+              <label for="username">Nom d'utilisateur</label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                placeholder="Choisissez un pseudo"
+                required
+              />
             </div>
-        </section>
+
+            <div class="form-group">
+              <label for="email">Adresse Email</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="votre@email.com"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="password">Mot de passe</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Minimum 8 caractères"
+                required
+              />
+            </div>
+
+            <button type="submit" class="btn-submit">Créer mon compte</button>
+          </form>
+
+          <div class="login-link">
+            Déjà inscrit ? <a href="/login">Connectez-vous ici</a>
+          </div>
+        </div>
+      </div>
     </main>
 
-    <footer id="contact" class="footer">
-        <div class="container">
-            <p>Projet pedagogique - ETML 183</p>
-        </div>
+    <footer class="footer">
+      <div class="container">
+        <p>Projet pédagogique - ETML 183</p>
+      </div>
     </footer>
 
     <script src="/js/nav.js"></script>
-</body>
+  </body>
 </html>
