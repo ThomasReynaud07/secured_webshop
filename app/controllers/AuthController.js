@@ -31,7 +31,6 @@ module.exports = {
       if (!hashedpassword) {
         return res.status(401).json({ error: "hasba" });
       }
-      //res.json({ message: "Connexion réussie", user: results[0] });
       req.flash("success", "Connexion réussie");
       res.redirect("/");
     });
