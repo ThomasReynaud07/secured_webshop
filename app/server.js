@@ -1,9 +1,18 @@
 require("dotenv").config({ path: "../.env" });
 
+const { loginLimiter } = require("./middleware/limitRate");
 const express = require("express");
 const path = require("path");
 const session = require("express-session");
 const app = express();
+const https = require("https");
+const fs = require("fs");
+
+//https
+const httpsOptions = {
+  key: fs.readFileSync(path.join(__dirname, "server.key")),
+  cert: fs.readFileSync(path.join(__dirname, "server.cert")),
+};
 
 app.use(
   session({
@@ -31,6 +40,7 @@ const adminRoute = require("./routes/Admin");
 const verifyToken = require("./middleware/auth");
 const isAdmin = require("./middleware/admin");
 
+app.use("/api/auth/login", loginLimiter);
 app.use("/api/auth", authRoute);
 app.use("/api/profile", verifyToken, profileRoute);
 app.use("/api/admin", verifyToken, isAdmin, adminRoute);
@@ -59,6 +69,7 @@ app.get("/admin", (_req, res) =>
 
 // Démarrage du serveur
 app.get("/test", (_req, res) => res.send("db admin: root, pwd : root"));
-app.listen(8080, () => {
-  console.log("Serveur démarré sur http://localhost:8080");
+const PORT = 8080;
+https.createServer(httpsOptions, app).listen(PORT, () => {
+  console.log(`Serveur sécurisé lancé sur https://localhost:${PORT}`);
 });

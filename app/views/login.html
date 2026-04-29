@@ -257,10 +257,10 @@
 
             if (res.ok) {
               localStorage.setItem("monTokenJWT", data.token);
-              // On redirige vers le profil
               window.location.href = "/profile";
             } else {
-              errorEl.textContent = data.message || "Identifiants incorrects";
+              errorEl.textContent =
+                data.error || data.message || "Identifiants incorrects";
               errorEl.style.display = "block";
             }
           } catch (err) {
