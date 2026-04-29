@@ -191,7 +191,7 @@
             <h1>Connexion</h1>
           </div>
 
-          <form action="/api/auth/login" method="POST">
+          <form id="login-form">
             <div class="form-group">
               <label for="username">Nom d'utilisateur</label>
               <input
@@ -215,6 +215,15 @@
             </div>
 
             <button type="submit" class="btn-submit">Se connecter</button>
+            <p
+              id="error-message"
+              style="
+                color: red;
+                display: none;
+                margin-top: 10px;
+                text-align: center;
+              "
+            ></p>
           </form>
         </div>
       </div>
@@ -227,5 +236,39 @@
     </footer>
 
     <script src="/js/nav.js"></script>
+    <script>
+      document
+        .getElementById("login-form")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const username = document.getElementById("username").value;
+          const password = document.getElementById("password").value;
+          const errorEl = document.getElementById("error-message");
+
+          try {
+            const res = await fetch("/api/auth/login", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ username, password }),
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+              localStorage.setItem("monTokenJWT", data.token);
+              // On redirige vers le profil
+              window.location.href = "/profile";
+            } else {
+              errorEl.textContent = data.message || "Identifiants incorrects";
+              errorEl.style.display = "block";
+            }
+          } catch (err) {
+            console.error(err);
+            errorEl.textContent = "Erreur de connexion au serveur.";
+            errorEl.style.display = "block";
+          }
+        });
+    </script>
   </body>
 </html>

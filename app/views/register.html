@@ -205,7 +205,7 @@
             <h1>Rejoignez-nous</h1>
           </div>
 
-          <form action="/api/auth/register" method="POST">
+          <form id="register-form">
             <div class="form-group">
               <label for="username">Nom d'utilisateur</label>
               <input
@@ -240,6 +240,15 @@
             </div>
 
             <button type="submit" class="btn-submit">Créer mon compte</button>
+            <p
+              id="error-message"
+              style="
+                color: red;
+                display: none;
+                margin-top: 10px;
+                text-align: center;
+              "
+            ></p>
           </form>
 
           <div class="login-link">
@@ -256,5 +265,41 @@
     </footer>
 
     <script src="/js/nav.js"></script>
+    <script>
+      document
+        .getElementById("register-form")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault(); // Empêche le changement de page
+
+          const username = document.getElementById("username").value;
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+          const errorEl = document.getElementById("error-message");
+
+          try {
+            const res = await fetch("/api/auth/register", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ username, email, password }),
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+              // ✅ Inscription réussie : on redirige vers la page de connexion
+              window.location.href = "/login";
+            } else {
+              // ❌ Erreur
+              errorEl.textContent =
+                data.error || data.message || "Erreur lors de l'inscription";
+              errorEl.style.display = "block";
+            }
+          } catch (err) {
+            console.error(err);
+            errorEl.textContent = "Erreur de connexion au serveur.";
+            errorEl.style.display = "block";
+          }
+        });
+    </script>
   </body>
 </html>

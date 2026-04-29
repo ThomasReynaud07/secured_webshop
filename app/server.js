@@ -14,14 +14,12 @@ app.use(
   }),
 );
 
-// Middleware pour parser le corps des requêtes
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const flash = require("express-flash-messages");
 app.use(flash());
 
-// Fichiers statiques (CSS, images, uploads...)
 app.use(express.static(path.join(__dirname, "public")));
 
 // ---------------------------------------------------------------
@@ -30,10 +28,12 @@ app.use(express.static(path.join(__dirname, "public")));
 const authRoute = require("./routes/Auth");
 const profileRoute = require("./routes/Profile");
 const adminRoute = require("./routes/Admin");
+const verifyToken = require("./middleware/auth");
+const isAdmin = require("./middleware/admin");
 
 app.use("/api/auth", authRoute);
-app.use("/api/profile", profileRoute);
-app.use("/api/admin", adminRoute);
+app.use("/api/profile", verifyToken, profileRoute);
+app.use("/api/admin", verifyToken, isAdmin, adminRoute);
 
 // ---------------------------------------------------------------
 // Routes pages (retournent du HTML)

@@ -79,18 +79,36 @@
 
     <script src="/js/nav.js"></script>
     <script>
+      const token = localStorage.getItem("monTokenJWT");
+      if (!token) {
+        window.location.href = "/login";
+      }
+
+      function checkAuthError(res) {
+        if (res.status === 401 || res.status === 403) {
+          localStorage.removeItem("monTokenJWT");
+          window.location.href = "/login";
+          return true;
+        }
+        return false;
+      }
+
       // ------------------------------------------------------------------
       // Chargement du profil au démarrage
       // ------------------------------------------------------------------
       async function loadProfile() {
-        const res = await fetch("/api/profile");
+        const res = await fetch("/api/profile", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (checkAuthError(res)) return;
         if (!res.ok) return;
+
         const user = await res.json();
 
         document.getElementById("username").textContent = user.username;
         document.getElementById("email").textContent = user.email;
         document.getElementById("role").textContent = user.role;
-
         document.getElementById("address").value = user.address || "";
 
         const photoContainer = document.getElementById("photo-container");
@@ -99,7 +117,9 @@
         }
 
         const infoDiv = document.getElementById("user-info");
-        infoDiv.innerHTML += `<div class="info-row"><strong>Adresse :</strong> ${user.address || ""}</div>`;
+        const existingAddress = document.getElementById("address-display");
+        if (existingAddress) existingAddress.remove();
+        infoDiv.innerHTML += `<div id="address-display" class="info-row"><strong>Adresse :</strong> ${user.address || ""}</div>`;
       }
 
       // ------------------------------------------------------------------
@@ -113,9 +133,14 @@
 
           const res = await fetch("/api/profile", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
             body: JSON.stringify({ address }),
           });
+
+          if (checkAuthError(res)) return;
 
           const data = await res.json();
           showMessage(res.ok ? "success" : "error", data.message || data.error);
@@ -137,8 +162,14 @@
 
           const res = await fetch("/api/profile/photo", {
             method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
             body: formData,
           });
+
+          if (checkAuthError(res)) return;
+
           const data = await res.json();
           showMessage(res.ok ? "success" : "error", data.message || data.error);
           if (res.ok) loadProfile();
