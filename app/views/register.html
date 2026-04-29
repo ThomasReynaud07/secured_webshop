@@ -58,12 +58,10 @@
         text-decoration: none;
         color: var(--text);
       }
-
       .menu {
         display: flex;
         gap: 1.2rem;
       }
-
       .menu a {
         text-decoration: none;
         color: var(--text);
@@ -79,14 +77,13 @@
         padding: 2rem 0;
       }
 
-      /* Card (Adaptée de login-card) */
       .register-card {
         background: var(--surface);
         border-radius: var(--radius);
         box-shadow: var(--shadow);
         padding: 2.5rem;
         width: 100%;
-        max-width: 480px; /* Un peu plus large pour le confort */
+        max-width: 480px;
         margin: 0 auto;
       }
 
@@ -94,7 +91,6 @@
         text-align: center;
         margin-bottom: 2rem;
       }
-
       .eyebrow {
         display: inline-block;
         margin-bottom: 1rem;
@@ -110,11 +106,9 @@
         margin: 0.5rem 0;
         font-size: 1.8rem;
       }
-
       .form-group {
         margin-bottom: 1.2rem;
       }
-
       label {
         display: block;
         font-weight: 600;
@@ -122,9 +116,7 @@
         font-size: 0.9rem;
       }
 
-      input[type="text"],
-      input[type="email"],
-      input[type="password"] {
+      input {
         width: 100%;
         padding: 0.75rem 1rem;
         border: 1px solid #d1d5db;
@@ -163,20 +155,55 @@
         font-size: 0.9rem;
         color: var(--muted);
       }
-
       .login-link a {
         color: var(--primary);
         text-decoration: none;
         font-weight: 600;
       }
 
-      /* Footer */
       .footer {
         border-top: 1px solid #e5e7eb;
         background: #fff;
         color: var(--muted);
         padding: 1.5rem 0;
         text-align: center;
+      }
+
+      /* Password Strength CSS */
+      .password-strength {
+        margin-top: 0.5rem;
+        font-size: 0.85rem;
+      }
+      .strength-bar-container {
+        width: 100%;
+        height: 6px;
+        background-color: #e5e7eb;
+        border-radius: 999px;
+        overflow: hidden;
+        margin-bottom: 0.5rem;
+      }
+      .strength-bar {
+        height: 100%;
+        width: 0%;
+        transition: all 0.3s ease;
+      }
+      .rules-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        color: var(--muted);
+      }
+      .rules-list li {
+        margin-bottom: 0.2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .rule-valid {
+        color: #16a34a;
+      }
+      .rule-invalid {
+        color: #ef4444;
       }
 
       @media (max-width: 500px) {
@@ -237,6 +264,23 @@
                 placeholder="Minimum 8 caractères"
                 required
               />
+
+              <div class="password-strength">
+                <div class="strength-bar-container">
+                  <div id="strength-bar" class="strength-bar"></div>
+                </div>
+                <ul class="rules-list">
+                  <li id="rule-length" class="rule-invalid">
+                    ✖ Au moins 8 caractères
+                  </li>
+                  <li id="rule-upper" class="rule-invalid">✖ Une majuscule</li>
+                  <li id="rule-lower" class="rule-invalid">✖ Une minuscule</li>
+                  <li id="rule-number" class="rule-invalid">✖ Un chiffre</li>
+                  <li id="rule-special" class="rule-invalid">
+                    ✖ Un caractère spécial
+                  </li>
+                </ul>
+              </div>
             </div>
 
             <button type="submit" class="btn-submit">Créer mon compte</button>
@@ -259,22 +303,67 @@
     </main>
 
     <footer class="footer">
-      <div class="container">
-        <p>Projet pédagogique - ETML 183</p>
-      </div>
+      <div class="container"><p>Projet pédagogique - ETML 183</p></div>
     </footer>
 
     <script src="/js/nav.js"></script>
     <script>
+      const passwordInput = document.getElementById("password");
+      const strengthBar = document.getElementById("strength-bar");
+
+      const rules = {
+        length: { regex: /.{8,}/, el: document.getElementById("rule-length") },
+        upper: { regex: /[A-Z]/, el: document.getElementById("rule-upper") },
+        lower: { regex: /[a-z]/, el: document.getElementById("rule-lower") },
+        number: { regex: /[0-9]/, el: document.getElementById("rule-number") },
+        special: {
+          regex: /[^A-Za-z0-9]/,
+          el: document.getElementById("rule-special"),
+        },
+      };
+
+      passwordInput.addEventListener("input", (e) => {
+        const pwd = e.target.value;
+        let validCount = 0;
+
+        for (const key in rules) {
+          const rule = rules[key];
+          if (rule.regex.test(pwd)) {
+            rule.el.className = "rule-valid";
+            rule.el.innerHTML = "✔ " + rule.el.innerHTML.substring(2);
+            validCount++;
+          } else {
+            rule.el.className = "rule-invalid";
+            rule.el.innerHTML = "✖ " + rule.el.innerHTML.substring(2);
+          }
+        }
+
+        const percentage = (validCount / 5) * 100;
+        strengthBar.style.width = percentage + "%";
+
+        if (validCount <= 2) strengthBar.style.backgroundColor = "#ef4444";
+        else if (validCount <= 4) strengthBar.style.backgroundColor = "#f59e0b";
+        else strengthBar.style.backgroundColor = "#16a34a";
+      });
+
       document
         .getElementById("register-form")
         .addEventListener("submit", async (e) => {
-          e.preventDefault(); // Empêche le changement de page
+          e.preventDefault();
+
+          const errorEl = document.getElementById("error-message");
+          errorEl.style.display = "none";
+
+          if (document.querySelectorAll(".rule-invalid").length > 0) {
+            errorEl.textContent =
+              "Le mot de passe ne respecte pas tous les critères de sécurité.";
+            errorEl.style.display = "block";
+            return;
+          }
 
           const username = document.getElementById("username").value;
           const email = document.getElementById("email").value;
-          const password = document.getElementById("password").value;
-          const errorEl = document.getElementById("error-message");
+          const password = passwordInput.value;
 
           try {
             const res = await fetch("/api/auth/register", {
@@ -286,10 +375,8 @@
             const data = await res.json();
 
             if (res.ok) {
-              // ✅ Inscription réussie : on redirige vers la page de connexion
               window.location.href = "/login";
             } else {
-              // ❌ Erreur
               errorEl.textContent =
                 data.error || data.message || "Erreur lors de l'inscription";
               errorEl.style.display = "block";

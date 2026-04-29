@@ -56,27 +56,47 @@ module.exports = {
   register: async (req, res) => {
     const { username, email, password } = req.body;
 
-    // Correction du message d'erreur
     if (!username || !password || !email) {
       return res
         .status(400)
         .json({ error: "Pseudo, email et mot de passe requis" });
     }
 
-    const passwordPeper = password + process.env.SECRETKEY;
-    const hashedpassword = await bcrypt.hash(passwordPeper, 10);
+    const strongPasswordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
+    if (!strongPasswordRegex.test(password)) {
+      return res.status(400).json({
+        error:
+          "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.",
+      });
+    }
 
-    const query = `INSERT INTO users (username, email, password) VALUES (?, ?, ?)`;
+    try {
+      const passwordPeper = password + process.env.SECRETKEY;
+      const hashedpassword = await bcrypt.hash(passwordPeper, 10);
 
-    db.query(query, [username, email, hashedpassword], (err, results) => {
-      if (err) {
-        return res.status(500).json({
-          error: "Erreur lors de la création du compte",
-          details: err.message,
-        });
-      }
+      const query = `INSERT INTO users (username, email, password) VALUES (?, ?, ?)`;
 
-      res.status(201).json({ message: "Compte créé avec succès" });
-    });
+      db.query(query, [username, email, hashedpassword], (err, results) => {
+        if (err) {
+          console.error("Erreur DB Register:", err);
+
+          if (err.code === "ER_DUP_ENTRY") {
+            return res
+              .status(400)
+              .json({ error: "Ce pseudo ou cet email est déjà utilisé." });
+          }
+
+          return res.status(500).json({
+            error: "Une erreur est survenue lors de la création du compte.",
+          });
+        }
+
+        res.status(201).json({ message: "Compte créé avec succès" });
+      });
+    } catch (error) {
+      console.error("Erreur Hashage:", error);
+      res.status(500).json({ error: "Erreur interne du serveur." });
+    }
   },
 };
