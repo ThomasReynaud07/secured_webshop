@@ -17,7 +17,10 @@ module.exports = {
 
     db.query(query, [username], async (err, results) => {
       if (err) {
-        return res.status(500).json({ error: err.message, query: query });
+        console.error("Erreur login db:", err);
+        return res
+          .status(500)
+          .json({ error: "Une erreur interne est survenue." });
       }
 
       if (results.length === 0) {

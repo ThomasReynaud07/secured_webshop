@@ -13,7 +13,10 @@ module.exports = {
       [userId],
       (err, results) => {
         if (err) {
-          return res.status(500).json({ error: "Erreur serveur" });
+          console.error("Erreur Profile DB:", err);
+          return res.status(500).json({
+            error: "Impossible de récupérer les informations du profil.",
+          });
         }
         if (results.length === 0) {
           return res.status(404).json({ error: "Utilisateur introuvable" });
@@ -60,7 +63,10 @@ module.exports = {
       [photoPath, userId],
       (err) => {
         if (err) {
-          return res.status(500).json({ error: "Erreur serveur" });
+          console.error("Erreur Upload DB:", err);
+          return res
+            .status(500)
+            .json({ error: "Erreur lors de l'enregistrement de la photo." });
         }
         res.json({ message: "Photo mise à jour", photo_path: photoPath });
       },
