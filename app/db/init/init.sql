@@ -21,9 +21,14 @@ CREATE TABLE IF NOT EXISTS users (
     email      VARCHAR(100) NOT NULL UNIQUE,
     password   VARCHAR(255) NOT NULL,
     role       VARCHAR(20)  NOT NULL DEFAULT 'user',
+    failed_login_attempts INT NOT NULL DEFAULT 0,
+    lockout_until DATETIME NULL,
     address    VARCHAR(255),
     photo_path VARCHAR(255)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+ALTER TABLE users ADD COLUMN IF NOT EXISTS failed_login_attempts INT NOT NULL DEFAULT 0;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS lockout_until DATETIME NULL;
 
 -- ---------------------------------------------------------------
 -- Table products
