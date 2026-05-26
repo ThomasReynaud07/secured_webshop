@@ -6,7 +6,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let menuHtml = "";
 
   if (token) {
-    // On décode le token pour lire le rôle
     const payload = JSON.parse(atob(token.split(".")[1]));
 
     menuHtml = `
@@ -14,7 +13,6 @@ document.addEventListener("DOMContentLoaded", () => {
       <a href="/profile">Profil</a>
     `;
 
-    // ESSENTIEL : On n'ajoute le lien Admin que si le rôle est 'admin'
     if (payload.role === "admin") {
       menuHtml += `<a href="/admin">Admin</a>`;
     }
